@@ -149,7 +149,9 @@ async function main() {
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, JSON.stringify(payload, null, 2), 'utf8');
   logStep('已写入', path.relative(ROOT, outFile));
-  console.log(`\n共 ${payload.pages.length} 条页面记录（含 hidden）。下一步: node scripts/wiki-sync.mjs --source ${path.relative(ROOT, outFile)} --out docs --clean`);
+  console.log(
+    `\n共 ${payload.pages.length} 条页面记录。wiki-sync 将按 type / 子节点 / 正文推断文件夹（不依赖 hidden）。下一步: node scripts/wiki-sync.mjs --source ${path.relative(ROOT, outFile)} --out docs --clean`,
+  );
 }
 
 main().catch((err) => {

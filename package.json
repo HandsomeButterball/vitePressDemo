@@ -3,11 +3,14 @@
     "vitepress": "^2.0.0-alpha.17"
   },
   "scripts": {
+    "predocs:dev": "node scripts/wiki-sync.mjs",
+    "predocs:build": "node scripts/wiki-sync.mjs --clean",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "wiki:fetch": "node scripts/wiki-fetch.mjs",
     "wiki:sync": "node scripts/wiki-sync.mjs",
+    "wiki:sync:clean": "node scripts/wiki-sync.mjs --clean",
     "wiki:pull": "node scripts/wiki-fetch.mjs --out scripts/.wiki-cache/last-pages.json && node scripts/wiki-sync.mjs --source scripts/.wiki-cache/last-pages.json --out docs --clean"
   }
 }

@@ -34,6 +34,16 @@ const zhLocalSearchTranslations: NonNullable<
   },
 }
 
+/** wiki-sync 顶栏：优先 wikiNav 数组（含下拉），兼容旧版单个 wikiNavItem */
+function navFromWiki(locale: Record<string, unknown>): DefaultTheme.NavItem[] {
+  const list = locale.wikiNav as DefaultTheme.NavItem[] | undefined
+  if (Array.isArray(list) && list.length > 0) {
+    return list
+  }
+  const single = locale.wikiNavItem as DefaultTheme.NavItem | null | undefined
+  return single ? [single] : []
+}
+
 /** 兼容 wiki-sync 生成的 wikiSidebars（对象）或旧版 wikiSidebar（数组） */
 function sidebarFromWiki(
   locale: Record<string, unknown>,
@@ -51,6 +61,8 @@ function sidebarFromWiki(
 export default defineConfig({
   title: 'Nexus',
   description: 'VitePress + Wiki sync（中文默认 + en-us）',
+  /** 路由不带 .html，与 wiki-sync 生成的 path 一致，如 /reference/manifest/overview */
+  cleanUrls: true,
   /**
    * 本地搜索必须写在顶层 themeConfig：VitePress 的 local-search 插件只读
    * `site.themeConfig.search`，不会读 locales.*.themeConfig（多语言下否则搜索不启用）。
@@ -77,7 +89,7 @@ export default defineConfig({
       themeConfig: {
         logo: siteLogo,
         logoLink: '/',
-        nav: [...(zh.wikiNavItem ? [zh.wikiNavItem] : [])],
+        nav: navFromWiki(zh as Record<string, unknown>),
         sidebar: sidebarFromWiki(zh as Record<string, unknown>, '/user-manual/'),
         socialLinks: [{ icon: 'github', link: 'https://github.com/vuejs/vitepress' }],
       },
@@ -91,7 +103,7 @@ export default defineConfig({
         logo: siteLogo,
         /** 英文文档内点 Nexus 回到根站首页（与中文首页一致） */
         logoLink: '/',
-        nav: [...(en.wikiNavItem ? [en.wikiNavItem] : [])],
+        nav: navFromWiki(en as Record<string, unknown>),
         sidebar: sidebarFromWiki(en as Record<string, unknown>, '/en-us/user-manual/'),
         socialLinks: [{ icon: 'github', link: 'https://github.com/vuejs/vitepress' }],
       },

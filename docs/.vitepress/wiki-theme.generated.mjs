@@ -3,6 +3,27 @@
 export default {
   "locales": {
     "root": {
+      "wikiNav": [
+        {
+          "text": "用户手册",
+          "link": "/user-manual/overview",
+          "activeMatch": "^/user-manual/"
+        },
+        {
+          "text": "参考(reference)",
+          "items": [
+            {
+              "text": "CLI(cli)",
+              "link": "/reference/cli/"
+            },
+            {
+              "text": "Mainfest(mainfest)",
+              "link": "/reference/manifest/"
+            }
+          ],
+          "activeMatch": "^/reference/"
+        }
+      ],
       "wikiNavItem": {
         "text": "用户手册",
         "link": "/user-manual/overview",
@@ -25,10 +46,54 @@ export default {
               }
             ]
           }
+        ],
+        "/reference/cli/": [
+          {
+            "text": "CLI(cli)",
+            "link": "/reference/cli/"
+          },
+          {
+            "text": "build(build)",
+            "link": "/reference/cli/build/",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "list(list)",
+                "link": "/reference/cli/build/list"
+              }
+            ]
+          }
+        ],
+        "/reference/manifest/": [
+          {
+            "text": "Mainfest(mainfest)",
+            "link": "/reference/manifest/"
+          }
         ]
       }
     },
     "en-us": {
+      "wikiNav": [
+        {
+          "text": "User Manual",
+          "link": "/en-us/user-manual/overview",
+          "activeMatch": "^/en-us/user-manual/"
+        },
+        {
+          "text": "Reference",
+          "items": [
+            {
+              "text": "CLI",
+              "link": "/en-us/reference/cli/"
+            },
+            {
+              "text": "Manifest",
+              "link": "/en-us/reference/manifest/"
+            }
+          ],
+          "activeMatch": "^/en-us/reference/"
+        }
+      ],
       "wikiNavItem": {
         "text": "User Manual",
         "link": "/en-us/user-manual/overview",
@@ -50,6 +115,29 @@ export default {
                 "link": "/en-us/user-manual/getting-started/guide"
               }
             ]
+          }
+        ],
+        "/en-us/reference/cli/": [
+          {
+            "text": "CLI",
+            "link": "/en-us/reference/cli/"
+          },
+          {
+            "text": "build",
+            "link": "/en-us/reference/cli/build/",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "list",
+                "link": "/en-us/reference/cli/build/list"
+              }
+            ]
+          }
+        ],
+        "/en-us/reference/manifest/": [
+          {
+            "text": "Manifest",
+            "link": "/en-us/reference/manifest/"
           }
         ]
       }
