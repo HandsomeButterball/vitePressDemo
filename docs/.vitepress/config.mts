@@ -2,6 +2,13 @@ import { defineConfig } from 'vitepress'
 import type { DefaultTheme } from 'vitepress/theme'
 import wikiTheme from './wiki-theme.generated.mjs'
 
+const apiNavItem = { text: 'REST API', link: '/api/', activeMatch: '^/api/' }
+
+const apiSidebarItems: DefaultTheme.SidebarItem[] = [
+  { text: 'API 概览', link: '/api/' },
+  { text: 'Ship Customer', link: '/api/ship-customer' },
+]
+
 const zh = wikiTheme.locales?.root ?? wikiTheme.locales?.['zh-cn'] ?? {}
 const en = wikiTheme.locales?.['en-us'] ?? {}
 
@@ -48,13 +55,14 @@ function navFromWiki(locale: Record<string, unknown>): DefaultTheme.NavItem[] {
 function sidebarFromWiki(
   locale: Record<string, unknown>,
   legacyPrefix: string,
+  extra?: Record<string, DefaultTheme.SidebarItem[]>,
 ): DefaultTheme.Config['sidebar'] {
   const map = locale.wikiSidebars as Record<string, DefaultTheme.SidebarItem[]> | undefined
   if (map && typeof map === 'object' && Object.keys(map).length > 0) {
-    return map
+    return { ...map, ...extra }
   }
   const list = locale.wikiSidebar as DefaultTheme.SidebarItem[] | undefined
-  return { [legacyPrefix]: Array.isArray(list) ? list : [] }
+  return { [legacyPrefix]: Array.isArray(list) ? list : [], ...extra }
 }
 
 // https://vitepress.dev/reference/site-config
@@ -89,8 +97,10 @@ export default defineConfig({
       themeConfig: {
         logo: siteLogo,
         logoLink: '/',
-        nav: navFromWiki(zh as Record<string, unknown>),
-        sidebar: sidebarFromWiki(zh as Record<string, unknown>, '/user-manual/'),
+        nav: [...navFromWiki(zh as Record<string, unknown>), apiNavItem],
+        sidebar: sidebarFromWiki(zh as Record<string, unknown>, '/user-manual/', {
+          '/api/': apiSidebarItems,
+        }),
         socialLinks: [{ icon: 'github', link: 'https://github.com/vuejs/vitepress' }],
       },
     },

@@ -1,0 +1,710 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PingCode REST API（Ship 客户 — 示例）",
+    "version": "1.0.0",
+    "description": "仅包含 **Ship 客户** 模块的 OpenAPI 示例定义。\n由 `facade.ts` 中的 `@api` 注释及 apidoc 数据整理而来。\n"
+  },
+  "servers": [
+    {
+      "url": "https://{host}/v1",
+      "description": "PingCode 开放 API（将 `{host}` 替换为你的租户域名）",
+      "variables": {
+        "host": {
+          "default": "open.example.pingcode.com",
+          "description": "API 主机名（不含 `/v1` 前缀）"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "Ship / 客户",
+      "description": "查看与管理产品下的客户基本信息。"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": [
+        "pcp:read:ship:product",
+        "pcp:write:ship:product"
+      ]
+    }
+  ],
+  "paths": {
+    "/ship/products/{product_id}/customers": {
+      "get": {
+        "operationId": "shipGetCustomers",
+        "summary": "获取客户列表",
+        "description": "返回指定产品下的分页客户列表。",
+        "tags": [
+          "Ship / 客户"
+        ],
+        "security": [
+          {
+            "BearerAuth": [
+              "pcp:read:ship:product"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductId"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "$ref": "#/components/parameters/PageIndex"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "分页客户列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedCustomers"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/CustomerListResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
+      "post": {
+        "operationId": "shipCreateCustomer",
+        "summary": "创建客户",
+        "tags": [
+          "Ship / 客户"
+        ],
+        "security": [
+          {
+            "BearerAuth": [
+              "pcp:write:ship:product"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomerRequest"
+              },
+              "examples": {
+                "default": {
+                  "$ref": "#/components/examples/CreateCustomerRequest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "已创建的客户",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/CustomerResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/ship/products/{product_id}/customers/{customer_id}": {
+      "get": {
+        "operationId": "shipGetCustomer",
+        "summary": "获取单个客户",
+        "description": "已在代码中实现；资源模型在 apidoc 的 **Customer** 分组中有说明。\n（处理函数上无独立 `@api` 块 — 此处为文档完整性而收录。）\n",
+        "tags": [
+          "Ship / 客户"
+        ],
+        "security": [
+          {
+            "BearerAuth": [
+              "pcp:read:ship:product"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductId"
+          },
+          {
+            "$ref": "#/components/parameters/CustomerId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "客户详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/CustomerResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "shipPartialUpdateCustomer",
+        "summary": "部分更新客户",
+        "tags": [
+          "Ship / 客户"
+        ],
+        "security": [
+          {
+            "BearerAuth": [
+              "pcp:write:ship:product"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductId"
+          },
+          {
+            "$ref": "#/components/parameters/CustomerId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCustomerRequest"
+              },
+              "examples": {
+                "default": {
+                  "$ref": "#/components/examples/UpdateCustomerRequest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新后的客户",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/CustomerResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "access_token",
+        "description": "企业令牌或用户令牌（`Authorization: Bearer <access_token>`）。\n各接口所需 scope 不同（见各 path 上的 `security`）。\n"
+      }
+    },
+    "parameters": {
+      "ProductId": {
+        "name": "product_id",
+        "in": "path",
+        "required": true,
+        "description": "产品 ID。",
+        "schema": {
+          "type": "string",
+          "example": "6422711c3f12e6c1e46d40e6"
+        }
+      },
+      "CustomerId": {
+        "name": "customer_id",
+        "in": "path",
+        "required": true,
+        "description": "客户 ID。",
+        "schema": {
+          "type": "string",
+          "example": "64dd899e3f6383ba72ec2a0d"
+        }
+      },
+      "PageSize": {
+        "name": "page_size",
+        "in": "query",
+        "required": false,
+        "description": "每页条数（1–100，默认 30）。",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 30
+        }
+      },
+      "PageIndex": {
+        "name": "page_index",
+        "in": "query",
+        "required": false,
+        "description": "页码，从 0 开始（默认 0）。",
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        }
+      }
+    },
+    "schemas": {
+      "ShipProductRef": {
+        "type": "object",
+        "description": "产品引用",
+        "required": [
+          "id",
+          "url",
+          "identifier",
+          "name",
+          "is_archived",
+          "is_deleted"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "产品 ID"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "产品资源 URL"
+          },
+          "identifier": {
+            "type": "string",
+            "description": "产品标识符",
+            "example": "SLC"
+          },
+          "name": {
+            "type": "string",
+            "description": "产品名称"
+          },
+          "is_archived": {
+            "type": "integer",
+            "description": "是否已归档（0 否，1 是）",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "is_deleted": {
+            "type": "integer",
+            "description": "是否已删除（0 否，1 是）",
+            "enum": [
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "DirectoryUserRef": {
+        "type": "object",
+        "description": "目录用户引用",
+        "required": [
+          "id",
+          "url",
+          "name",
+          "display_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "用户 ID"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "用户资源 URL"
+          },
+          "name": {
+            "type": "string",
+            "description": "用户名"
+          },
+          "display_name": {
+            "type": "string",
+            "description": "显示名称"
+          },
+          "avatar": {
+            "type": "string",
+            "format": "uri",
+            "description": "头像 URL"
+          }
+        }
+      },
+      "Customer": {
+        "type": "object",
+        "description": "客户",
+        "required": [
+          "id",
+          "url",
+          "product",
+          "name",
+          "is_archived",
+          "is_deleted"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "客户 ID"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "客户资源 URL"
+          },
+          "product": {
+            "$ref": "#/components/schemas/ShipProductRef"
+          },
+          "name": {
+            "type": "string",
+            "description": "客户名称"
+          },
+          "assignee": {
+            "$ref": "#/components/schemas/DirectoryUserRef",
+            "description": "负责人"
+          },
+          "scale": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "规模"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述"
+          },
+          "created_at": {
+            "type": "integer",
+            "description": "创建时间（Unix 时间戳，秒）"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/DirectoryUserRef",
+            "description": "创建人"
+          },
+          "updated_at": {
+            "type": "integer",
+            "description": "更新时间（Unix 时间戳，秒）"
+          },
+          "updated_by": {
+            "$ref": "#/components/schemas/DirectoryUserRef",
+            "description": "更新人"
+          },
+          "is_archived": {
+            "type": "integer",
+            "description": "是否已归档（0 否，1 是）",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "is_deleted": {
+            "type": "integer",
+            "description": "是否已删除（0 否，1 是）",
+            "enum": [
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "PaginatedCustomers": {
+        "type": "object",
+        "description": "分页客户列表",
+        "required": [
+          "page_size",
+          "page_index",
+          "total",
+          "values"
+        ],
+        "properties": {
+          "page_size": {
+            "type": "integer",
+            "description": "每页条数"
+          },
+          "page_index": {
+            "type": "integer",
+            "description": "当前页码（从 0 开始）"
+          },
+          "total": {
+            "type": "integer",
+            "description": "总条数"
+          },
+          "values": {
+            "type": "array",
+            "description": "客户列表",
+            "items": {
+              "$ref": "#/components/schemas/Customer"
+            }
+          }
+        }
+      },
+      "CreateCustomerRequest": {
+        "type": "object",
+        "description": "创建客户请求体",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "客户名称"
+          },
+          "assignee_id": {
+            "type": "string",
+            "description": "负责人用户 ID"
+          },
+          "scale": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "规模"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述"
+          }
+        }
+      },
+      "UpdateCustomerRequest": {
+        "type": "object",
+        "description": "更新客户请求体（部分字段）",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "客户名称"
+          },
+          "assignee_id": {
+            "type": "string",
+            "description": "负责人用户 ID"
+          },
+          "scale": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "规模"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述"
+          }
+        }
+      },
+      "ErrorBody": {
+        "type": "object",
+        "description": "PingCode 典型错误响应体（具体字段因接口可能略有差异）",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "错误码"
+          },
+          "message": {
+            "type": "string",
+            "description": "错误信息"
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "请求参数无效",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorBody"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "缺少或无效的访问令牌",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorBody"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "scope 或权限不足",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorBody"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "资源不存在",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorBody"
+            }
+          }
+        }
+      }
+    },
+    "examples": {
+      "CreateCustomerRequest": {
+        "value": {
+          "name": "上海某某新零售有限公司",
+          "assignee_id": "a0417f68e846aae315c85d24643678a9",
+          "scale": 200,
+          "description": "上海某某新零售有限公司的描述"
+        }
+      },
+      "UpdateCustomerRequest": {
+        "value": {
+          "name": "上海某某新零售有限公司",
+          "assignee_id": "a0417f68e846aae315c85d24643678a9",
+          "scale": 200,
+          "description": "上海某某新零售有限公司的描述"
+        }
+      },
+      "CustomerResponse": {
+        "value": {
+          "id": "64dd899e3f6383ba72ec2a0d",
+          "url": "https://open.example.pingcode.com/v1/ship/products/6422711c3f12e6c1e46d40e6/customers/64dd899e3f6383ba72ec2a0d",
+          "product": {
+            "id": "6422711c3f12e6c1e46d40e6",
+            "url": "https://open.example.pingcode.com/v1/ship/products/6422711c3f12e6c1e46d40e6",
+            "identifier": "SLC",
+            "name": "示例产品",
+            "is_archived": 0,
+            "is_deleted": 0
+          },
+          "name": "上海某某新零售有限公司",
+          "assignee": {
+            "id": "a0417f68e846aae315c85d24643678a9",
+            "url": "https://open.example.pingcode.com/v1/directory/users/a0417f68e846aae315c85d24643678a9",
+            "name": "john",
+            "display_name": "张三",
+            "avatar": "https://s3.amazonaws.com/bucket/b46ef40c-e22e-4ecf-a599-cace9fba839a_160x160.png"
+          },
+          "scale": 200,
+          "description": "上海某某新零售有限公司的描述",
+          "created_at": 1692240286,
+          "created_by": {
+            "id": "a0417f68e846aae315c85d24643678a9",
+            "url": "https://open.example.pingcode.com/v1/directory/users/a0417f68e846aae315c85d24643678a9",
+            "name": "john",
+            "display_name": "张三",
+            "avatar": "https://s3.amazonaws.com/bucket/b46ef40c-e22e-4ecf-a599-cace9fba839a_160x160.png"
+          },
+          "updated_at": 1692240286,
+          "updated_by": {
+            "id": "a0417f68e846aae315c85d24643678a9",
+            "url": "https://open.example.pingcode.com/v1/directory/users/a0417f68e846aae315c85d24643678a9",
+            "name": "john",
+            "display_name": "张三",
+            "avatar": "https://s3.amazonaws.com/bucket/b46ef40c-e22e-4ecf-a599-cace9fba839a_160x160.png"
+          },
+          "is_archived": 0,
+          "is_deleted": 0
+        }
+      },
+      "CustomerListResponse": {
+        "value": {
+          "page_size": 30,
+          "page_index": 0,
+          "total": 1,
+          "values": [
+            {
+              "id": "64dd899e3f6383ba72ec2a0d",
+              "url": "https://open.example.pingcode.com/v1/ship/products/6422711c3f12e6c1e46d40e6/customers/64dd899e3f6383ba72ec2a0d",
+              "product": {
+                "id": "6422711c3f12e6c1e46d40e6",
+                "url": "https://open.example.pingcode.com/v1/ship/products/6422711c3f12e6c1e46d40e6",
+                "identifier": "SLC",
+                "name": "示例产品",
+                "is_archived": 0,
+                "is_deleted": 0
+              },
+              "name": "上海某某新零售有限公司",
+              "assignee": {
+                "id": "a0417f68e846aae315c85d24643678a9",
+                "url": "https://open.example.pingcode.com/v1/directory/users/a0417f68e846aae315c85d24643678a9",
+                "name": "john",
+                "display_name": "张三",
+                "avatar": "https://s3.amazonaws.com/bucket/b46ef40c-e22e-4ecf-a599-cace9fba839a_160x160.png"
+              },
+              "scale": 200,
+              "description": "上海某某新零售有限公司的描述",
+              "created_at": 1692240286,
+              "is_archived": 0,
+              "is_deleted": 0
+            }
+          ]
+        }
+      }
+    }
+  }
+}
