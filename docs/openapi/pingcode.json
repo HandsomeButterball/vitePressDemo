@@ -1,0 +1,598 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PingCode REST API",
+    "description": "PingCode REST API 文档。",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://open.pingcode.com/v1",
+      "description": "公有云 API 根路径"
+    }
+  ],
+  "tags": [
+    { "name": "空间", "description": "知识管理 · 空间" },
+    { "name": "页面", "description": "知识管理 · 页面" }
+  ],
+  "paths": {
+    "/wiki/spaces": {
+      "post": {
+        "tags": ["空间"],
+        "operationId": "wiki-create-space",
+        "summary": "创建一个空间",
+        "description": "企业令牌不能创建 `scope_type` 为 `user` 类型的空间。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateWikiSpaceRequest" },
+              "example": {
+                "name": "团队空间",
+                "identifier": "GROUP",
+                "scope_type": "user_group",
+                "scope_id": "63c8fb32729dee3334d96af7",
+                "description": "团队空间所属一个团队，只能添加所属团队内的成员。",
+                "members": [
+                  {
+                    "id": "a0417f68e846aae315c85d24643678a9",
+                    "type": "user"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiSpace" },
+                "example": {
+                  "id": "642fd641209b56920a6c6e5f",
+                  "url": "https://rest_api_root/v1/wiki/spaces/642fd641209b56920a6c6e5f",
+                  "identifier": "GROUP",
+                  "name": "团队空间",
+                  "scope_type": "user_group",
+                  "scope_id": "63c8fb32729dee3334d96af7",
+                  "visibility": "private",
+                  "color": "#FB7894",
+                  "description": "团队空间所属一个团队，只能添加所属团队内的成员。",
+                  "members": [
+                    {
+                      "id": "a0417f68e846aae315c85d24643678a9",
+                      "url": "https://rest_api_root/v1/wiki/spaces/642fd641209b56920a6c6e5f/members/a0417f68e846aae315c85d24643678a9",
+                      "type": "user",
+                      "user": {
+                        "id": "a0417f68e846aae315c85d24643678a9",
+                        "url": "https://rest_api_root/v1/directory/users/a0417f68e846aae315c85d24643678a9",
+                        "name": "john"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["空间"],
+        "operationId": "wiki-list-spaces",
+        "summary": "获取空间列表",
+        "description": "分页获取当前用户可访问的 Wiki 空间列表。",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiSpaceListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/spaces/{space_id}": {
+      "patch": {
+        "tags": ["空间"],
+        "operationId": "wiki-patch-space",
+        "summary": "部分更新一个空间",
+        "parameters": [{ "$ref": "#/components/parameters/spaceId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PatchWikiSpaceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiSpace" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["空间"],
+        "operationId": "wiki-delete-space",
+        "summary": "删除一个空间",
+        "parameters": [{ "$ref": "#/components/parameters/spaceId" }],
+        "responses": {
+          "204": { "description": "删除成功" }
+        }
+      }
+    },
+    "/wiki/spaces/{space_id}/members": {
+      "get": {
+        "tags": ["空间"],
+        "operationId": "wiki-list-space-members",
+        "summary": "获取空间中的成员列表",
+        "parameters": [{ "$ref": "#/components/parameters/spaceId" }],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiSpaceMemberListResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["空间"],
+        "operationId": "wiki-add-space-member",
+        "summary": "向空间中添加一个成员",
+        "parameters": [{ "$ref": "#/components/parameters/spaceId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WikiSpaceMemberInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "添加成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiSpaceMember" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/spaces/{space_id}/members/{member_id}": {
+      "delete": {
+        "tags": ["空间"],
+        "operationId": "wiki-remove-space-member",
+        "summary": "在空间中移除一个成员",
+        "parameters": [{ "$ref": "#/components/parameters/spaceId" }, { "$ref": "#/components/parameters/memberId" }],
+        "responses": {
+          "204": { "description": "移除成功" }
+        }
+      }
+    },
+    "/wiki/pages": {
+      "post": {
+        "tags": ["页面"],
+        "operationId": "wiki-create-page",
+        "summary": "创建一个页面",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateWikiPageRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiPage" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["页面"],
+        "operationId": "wiki-list-pages",
+        "summary": "获取页面列表",
+        "parameters": [
+          {
+            "name": "space_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiPageListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/pages/{page_id}": {
+      "patch": {
+        "tags": ["页面"],
+        "operationId": "wiki-patch-page",
+        "summary": "部分更新一个页面",
+        "parameters": [{ "$ref": "#/components/parameters/pageId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PatchWikiPageRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiPage" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["页面"],
+        "operationId": "wiki-delete-page",
+        "summary": "删除一个页面",
+        "parameters": [{ "$ref": "#/components/parameters/pageId" }],
+        "responses": {
+          "204": { "description": "删除成功" }
+        }
+      }
+    },
+    "/wiki/pages/{page_id}/content": {
+      "get": {
+        "tags": ["页面"],
+        "operationId": "wiki-get-page-content",
+        "summary": "获取一个文档正文",
+        "parameters": [{ "$ref": "#/components/parameters/pageId" }],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiPageContent" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["页面"],
+        "operationId": "wiki-update-page-content",
+        "summary": "更新一个文档正文",
+        "parameters": [{ "$ref": "#/components/parameters/pageId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateWikiPageContentRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiPageContent" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/pages/{page_id}/versions": {
+      "get": {
+        "tags": ["页面"],
+        "operationId": "wiki-list-page-versions",
+        "summary": "获取一个页面的版本列表",
+        "parameters": [{ "$ref": "#/components/parameters/pageId" }],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiPageVersionListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/pages/{page_id}/versions/{version_id}/restore": {
+      "post": {
+        "tags": ["页面"],
+        "operationId": "wiki-restore-page-version",
+        "summary": "恢复一个页面到指定版本",
+        "parameters": [
+          { "$ref": "#/components/parameters/pageId" },
+          {
+            "name": "version_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WikiPage" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "spaceId": {
+        "name": "space_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "pageId": {
+        "name": "page_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      }
+    },
+    "schemas": {
+      "CreateWikiSpaceRequest": {
+        "type": "object",
+        "required": ["name", "identifier", "scope_type"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "空间的名称（不超过 32 个字符）。",
+            "maxLength": 32
+          },
+          "identifier": {
+            "type": "string",
+            "description": "空间的标识。在一个企业中唯一；由大写英文字母、数字、下划线、连接线组成（不超过 15 个字符）。",
+            "maxLength": 15,
+            "pattern": "^[A-Z0-9_-]+$"
+          },
+          "scope_type": {
+            "type": "string",
+            "description": "空间的所属类型。",
+            "enum": ["organization", "user_group", "user"]
+          },
+          "scope_id": {
+            "type": "string",
+            "description": "当 `scope_type` 为 `user_group` 时必填，表示团队 id；其他类型时无效。"
+          },
+          "visibility": {
+            "type": "string",
+            "description": "空间可见性。",
+            "enum": ["public", "private"]
+          },
+          "description": {
+            "type": "string",
+            "description": "空间的描述。"
+          },
+          "members": {
+            "type": "array",
+            "description": "空间成员的列表。",
+            "items": { "$ref": "#/components/schemas/WikiSpaceMemberInput" }
+          }
+        }
+      },
+      "PatchWikiSpaceRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "maxLength": 32 },
+          "description": { "type": "string" },
+          "visibility": { "type": "string", "enum": ["public", "private"] },
+          "color": { "type": "string", "example": "#FB7894" }
+        }
+      },
+      "WikiSpace": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "identifier": { "type": "string" },
+          "name": { "type": "string" },
+          "scope_type": { "type": "string", "enum": ["organization", "user_group", "user"] },
+          "scope_id": { "type": "string" },
+          "visibility": { "type": "string", "enum": ["public", "private"] },
+          "color": { "type": "string" },
+          "description": { "type": "string" },
+          "members": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WikiSpaceMember" }
+          }
+        }
+      },
+      "WikiSpaceListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WikiSpace" }
+          },
+          "total": { "type": "integer" }
+        }
+      },
+      "WikiSpaceMemberInput": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": { "type": "string", "description": "企业成员或团队的 id。" },
+          "type": {
+            "type": "string",
+            "description": "空间成员类型。",
+            "enum": ["user", "user_group"]
+          }
+        }
+      },
+      "WikiSpaceMember": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "type": { "type": "string", "enum": ["user", "user_group"] },
+          "user": { "$ref": "#/components/schemas/WikiDirectoryUser" }
+        }
+      },
+      "WikiSpaceMemberListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WikiSpaceMember" }
+          },
+          "total": { "type": "integer" }
+        }
+      },
+      "WikiDirectoryUser": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "name": { "type": "string" }
+        }
+      },
+      "CreateWikiPageRequest": {
+        "type": "object",
+        "required": ["space_id", "name"],
+        "properties": {
+          "space_id": { "type": "string" },
+          "name": { "type": "string" },
+          "parent_id": { "type": "string", "description": "父页面 id，可选。" }
+        }
+      },
+      "PatchWikiPageRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "parent_id": { "type": "string" }
+        }
+      },
+      "WikiPage": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "space_id": { "type": "string" },
+          "name": { "type": "string" },
+          "parent_id": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "WikiPageListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WikiPage" }
+          },
+          "total": { "type": "integer" }
+        }
+      },
+      "WikiPageContent": {
+        "type": "object",
+        "properties": {
+          "page_id": { "type": "string" },
+          "format": { "type": "string", "enum": ["markdown", "html", "json"], "default": "markdown" },
+          "body": { "type": "string", "description": "文档正文内容。" }
+        }
+      },
+      "UpdateWikiPageContentRequest": {
+        "type": "object",
+        "required": ["body"],
+        "properties": {
+          "format": { "type": "string", "enum": ["markdown", "html", "json"] },
+          "body": { "type": "string" }
+        }
+      },
+      "WikiPageVersion": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "version": { "type": "integer" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "created_by": { "$ref": "#/components/schemas/WikiDirectoryUser" }
+        }
+      },
+      "WikiPageVersionListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WikiPageVersion" }
+          },
+          "total": { "type": "integer" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "令牌：企业令牌 / 用户令牌"
+      }
+    }
+  },
+  "security": [{ "bearerAuth": [] }],
+  "x-tagGroups": [
+    {
+      "name": "知识管理",
+      "tags": ["空间", "页面"]
+    }
+  ]
+}
